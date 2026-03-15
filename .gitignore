@@ -9,4 +9,6 @@ build/
 *.perspectivev3
 xcuserdata/
 *.xcuserstate
-
+*.xcworkspace/xcuserdata/
+*.xcuserdatad
+*.xcuserstate
