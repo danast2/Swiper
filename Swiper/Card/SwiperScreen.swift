@@ -21,7 +21,11 @@ struct SwiperScreen: View {
 
     var body: some View {
         VStack {
-            CardSwipeView(items: $cards, selectedItem: $selectedCard, popTrigger: $popTrigger) { card, progress, direction in
+            CardSwipeView(
+                items: $cards,
+                selectedItem: $selectedCard,
+                popTrigger: $popTrigger
+            ) { card, progress, direction in
                 // Card content
                 ZStack {
                     RoundedRectangle(cornerRadius: 10)
