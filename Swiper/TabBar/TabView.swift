@@ -7,10 +7,9 @@
 
 import SwiftUI
 
-//MARK: - разделить на TabBarView / TabView / все названия проставлять через  enum
 struct TabBar: View {
     var body: some View {
-        TabView{
+        TabView {
             Tab("Home", systemImage: "house") {
                 SwiperScreen()
             }

@@ -29,7 +29,8 @@ public struct CardSwipeView<Item: Identifiable & Hashable, Content: View>: View 
         items: Binding<[Item]>,
         selectedItem: Binding<Item?> = .constant(nil),
         popTrigger: Binding<CardSwipeDirection?> = .constant(nil),
-        @ViewBuilder content: @escaping (Item, _ progress: CGFloat, _ direction: CardSwipeDirection) -> Content
+        @ViewBuilder content: @escaping (Item, _ progress: CGFloat,
+                                         _ direction: CardSwipeDirection) -> Content
     ) {
         self._items = items
         self._selectedItem = selectedItem
@@ -55,8 +56,14 @@ public struct CardSwipeView<Item: Identifiable & Hashable, Content: View>: View 
 
     public var body: some View {
         ZStack {
-            ForEach(Array(items.prefix(configuration.visibleCount).enumerated()), id: \.element.id) { index, item in
-                let progress = index == 0 ? min(abs(offset.x) / configuration.triggerThreshold, 1) : 0
+            ForEach(
+                Array(
+                    items.prefix(configuration.visibleCount).enumerated()
+                ),
+                id: \.element.id
+            ) { index, item in
+                let progress = index == 0 ?
+                min(abs(offset.x) / configuration.triggerThreshold, 1) : 0
 
                 content(item, progress, lastDirection)
                     .modifier(
@@ -85,7 +92,11 @@ public struct CardSwipeView<Item: Identifiable & Hashable, Content: View>: View 
     @ViewBuilder
     var poppedCard: some View {
         if let poppedItem {
-            content(poppedItem, min(abs(poppedOffset.x) / configuration.triggerThreshold, 1), poppedDirection)
+            content(
+                poppedItem,
+                min(abs(poppedOffset.x) / configuration.triggerThreshold, 1),
+                poppedDirection
+            )
                 .modifier(
                     CardSwipeEffect(
                         index: 0,
@@ -140,8 +151,8 @@ public struct CardSwipeView<Item: Identifiable & Hashable, Content: View>: View 
             withAnimation(.spring(duration: 0.5)) {
                 poppedOffset.x += (screenWidth * multiplier)
             } completion: {
-                self.poppedItem = nil
-                self.poppedOffset = .zero
+                poppedItem = nil
+                poppedOffset = .zero
 
                 if items.isEmpty {
                     configuration.onNoMoreCardsLeft?()
@@ -155,7 +166,7 @@ public struct CardSwipeView<Item: Identifiable & Hashable, Content: View>: View 
             Task {
                 try? await Task.sleep(nanoseconds: (1 * NSEC_PER_SEC) / 2)
 
-                self.poppedItem = nil
+                poppedItem = nil
 
                 if items.isEmpty {
                     configuration.onNoMoreCardsLeft?()

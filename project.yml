@@ -61,7 +61,7 @@ targets:
       CURRENT_PROJECT_VERSION: "1"                          # Внутренняя версия сборки
       MARKETING_VERSION: "1.0"                              # Версия приложения 
 
-      DEVELOPMENT_ASSET_PATHS: "Swiper/Swiper/Design/Resources" #путь для ассетов
+      DEVELOPMENT_ASSET_PATHS: "Swiper/Design/Resources" #путь для ассетов
 
       ENABLE_PREVIEWS: YES # Включает SwiftUI Previews 
 
