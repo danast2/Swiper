@@ -61,8 +61,6 @@ targets:
       CURRENT_PROJECT_VERSION: "1"                          # Внутренняя версия сборки
       MARKETING_VERSION: "1.0"                              # Версия приложения 
 
-      DEVELOPMENT_ASSET_PATHS: "Swiper/Resources" #путь для ассетов
-
       ENABLE_PREVIEWS: YES # Включает SwiftUI Previews 
 
       # ========== ключи для Info.plist ==========
