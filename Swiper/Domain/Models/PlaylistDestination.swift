@@ -7,5 +7,9 @@ import Foundation
 
 struct PlaylistDestination: Hashable, Sendable {
     let playlist: PlaylistRef
-    let initialCardID: String?
+}
+
+struct CardDestination: Hashable, Sendable {
+    let playlist: PlaylistRef
+    let cardID: String
 }

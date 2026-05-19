@@ -11,7 +11,7 @@ struct PlaylistTile: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             cover
-            Text("search.playlist.title \(playlist.number)")
+            Text(playlist.title)
                 .font(.subheadline)
                 .fontWeight(.semibold)
                 .foregroundStyle(.primary)

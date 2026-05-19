@@ -11,16 +11,12 @@ struct RootTabView: View {
     var body: some View {
         TabView {
             Tab("tab.home", systemImage: "house") {
-                NavigationStack {
-                    SwiperScreen(
-                        viewModel: SwiperViewModel(
-                            service: environment.playlistService,
-                            playlistID: environment.defaultPlaylistID
-                        )
+                HomeScreen(
+                    viewModel: HomeViewModel(
+                        service: environment.playlistService,
+                        playlists: environment.availablePlaylists
                     )
-                    .navigationTitle("tab.home")
-                    .navigationBarTitleDisplayMode(.inline)
-                }
+                )
             }
             Tab("tab.search", systemImage: "magnifyingglass") {
                 SearchScreen(
