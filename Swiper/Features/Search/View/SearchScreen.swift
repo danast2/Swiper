@@ -24,15 +24,23 @@ struct SearchScreen: View {
                 .navigationTitle("tab.search")
                 .searchable(text: $viewModel.searchText, prompt: Text("search.cards.prompt"))
                 .navigationDestination(for: PlaylistDestination.self) { destination in
-                    SwiperScreen(
-                        viewModel: SwiperViewModel(
+                    PlaylistDetailScreen(
+                        playlist: destination.playlist,
+                        viewModel: PlaylistDetailViewModel(
                             service: environment.playlistService,
-                            playlistID: destination.playlist.id,
-                            initialCardID: destination.initialCardID
+                            playlistID: destination.playlist.id
                         )
                     )
-                    .navigationTitle(Text("search.playlist.title \(destination.playlist.number)"))
-                    .navigationBarTitleDisplayMode(.inline)
+                }
+                .navigationDestination(for: CardDestination.self) { destination in
+                    CardDetailScreen(
+                        playlist: destination.playlist,
+                        viewModel: CardDetailViewModel(
+                            service: environment.playlistService,
+                            playlistID: destination.playlist.id,
+                            cardID: destination.cardID
+                        )
+                    )
                 }
                 .task {
                     await viewModel.loadAllIfNeeded()
@@ -53,9 +61,7 @@ struct SearchScreen: View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(environment.availablePlaylists) { playlist in
-                    NavigationLink(
-                        value: PlaylistDestination(playlist: playlist, initialCardID: nil)
-                    ) {
+                    NavigationLink(value: PlaylistDestination(playlist: playlist)) {
                         PlaylistTile(playlist: playlist)
                     }
                     .buttonStyle(.plain)
@@ -86,13 +92,19 @@ struct SearchScreen: View {
         case .loaded:
             List(viewModel.searchResults) { hit in
                 NavigationLink(
-                    value: PlaylistDestination(playlist: hit.playlist, initialCardID: hit.card.id)
+                    value: CardDestination(playlist: hit.playlist, cardID: hit.card.id)
                 ) {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
                             Text(hit.card.title)
                                 .foregroundStyle(.primary)
-                            Text("search.playlist.title \(hit.playlist.number)")
+                            if !hit.card.description.isEmpty {
+                                Text(hit.card.description)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(2)
+                            }
+                            Text(hit.playlist.title)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }

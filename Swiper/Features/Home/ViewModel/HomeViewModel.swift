@@ -1,5 +1,5 @@
 //
-//  SearchViewModel.swift
+//  HomeViewModel.swift
 //  Swiper
 //
 
@@ -8,7 +8,7 @@ import OSLog
 
 @MainActor
 @Observable
-final class SearchViewModel {
+final class HomeViewModel {
     enum LoadState {
         case idle
         case loading
@@ -17,44 +17,36 @@ final class SearchViewModel {
     }
 
     private(set) var state: LoadState = .idle
-    private(set) var allCards: [CardHit] = []
-    var searchText: String = ""
-
-    var searchResults: [CardHit] {
-        guard !searchText.isEmpty else { return [] }
-        return allCards.filter { hit in
-            hit.card.title.localizedCaseInsensitiveContains(searchText)
-                || hit.card.description.localizedCaseInsensitiveContains(searchText)
-        }
-    }
+    private(set) var hits: [CardHit] = []
 
     private let service: PlaylistServicing
     private let playlists: [PlaylistRef]
-    private let logger = Logger(subsystem: "com.daniildem.project.Swiper", category: "Search")
+    private let logger = Logger(subsystem: "com.daniildem.project.Swiper", category: "Home")
 
     init(service: PlaylistServicing, playlists: [PlaylistRef]) {
         self.service = service
         self.playlists = playlists
     }
 
-    func loadAllIfNeeded() async {
+    func loadIfNeeded() async {
         guard case .idle = state else { return }
         state = .loading
         do {
             let loaded = try await fetchAll()
-            allCards = loaded.sorted { lhs, rhs in
-                lhs.playlist.number < rhs.playlist.number
+            hits = loaded.sorted { lhs, rhs in
+                if lhs.playlist.number != rhs.playlist.number {
+                    return lhs.playlist.number < rhs.playlist.number
+                }
+                return lhs.card.id < rhs.card.id
             }
             state = .loaded
-            logger.debug(
-                "Loaded \(self.allCards.count) cards across \(self.playlists.count) playlists"
-            )
+            logger.debug("Loaded \(self.hits.count) cards across \(self.playlists.count) playlists")
         } catch let error as NetworkError {
             state = .failed(error)
-            logger.error("Failed to load search index: \(error.localizedDescription)")
+            logger.error("Failed to load home cards: \(error.localizedDescription)")
         } catch {
             state = .failed(.transport(error))
-            logger.error("Failed to load search index: \(error.localizedDescription)")
+            logger.error("Failed to load home cards: \(error.localizedDescription)")
         }
     }
 

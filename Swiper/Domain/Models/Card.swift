@@ -12,18 +12,21 @@ struct Card: Identifiable, Hashable, Sendable {
     let description: String
     let color: Color
     let videoURL: URL?
+    let thumbnailURL: URL?
 
     init(
         id: String,
         title: String,
         description: String = "",
         color: Color,
-        videoURL: URL? = nil
+        videoURL: URL? = nil,
+        thumbnailURL: URL? = nil
     ) {
         self.id = id
         self.title = title
         self.description = description
         self.color = color
         self.videoURL = videoURL
+        self.thumbnailURL = thumbnailURL
     }
 }

@@ -1,14 +1,16 @@
 //
-//  SwiperScreen.swift
+//  CardDetailScreen.swift
 //  Swiper
 //
 
 import SwiftUI
 
-struct SwiperScreen: View {
-    @State private var viewModel: SwiperViewModel
+struct CardDetailScreen: View {
+    let playlist: PlaylistRef
+    @State private var viewModel: CardDetailViewModel
 
-    init(viewModel: SwiperViewModel) {
+    init(playlist: PlaylistRef, viewModel: CardDetailViewModel) {
+        self.playlist = playlist
         _viewModel = State(initialValue: viewModel)
     }
 
@@ -17,37 +19,28 @@ struct SwiperScreen: View {
             switch viewModel.state {
             case .idle, .loading:
                 ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             case .failed(let error):
                 errorView(for: error)
+            case .notFound:
+                ContentUnavailableView(
+                    "error.title",
+                    systemImage: "questionmark.circle",
+                    description: Text(verbatim: "")
+                )
             case .loaded:
-                cardDeck
+                if let card = viewModel.card {
+                    CardDetailContent(card: card)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
             }
         }
+        .navigationTitle(playlist.title)
+        .navigationBarTitleDisplayMode(.inline)
         .task {
             if case .idle = viewModel.state {
                 await viewModel.load()
             }
-        }
-    }
-
-    private var cardDeck: some View {
-        CardSwipeView(
-            items: $viewModel.deck,
-            selectedItem: $viewModel.selectedCard,
-            popTrigger: $viewModel.popTrigger
-        ) { card, progress, direction in
-            SwiperCardContent(
-                card: card,
-                progress: progress,
-                direction: direction,
-                playsVideo: card.id == viewModel.selectedCard?.id
-            )
-        }
-        .onSwipeEnd { card, direction in
-            viewModel.onSwipe(card, direction: direction)
-        }
-        .onNoMoreCardsLeft {
-            viewModel.onNoMoreCards()
         }
     }
 
